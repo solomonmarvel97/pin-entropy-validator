@@ -77,6 +77,24 @@ class PINEntropyValidator {
             reason: "PIN meets security requirements"
         };
     }
+
+    static calculateStrength(pin) {
+        let score = 0;
+    
+        // Add points for length
+        score += pin.length;
+    
+        // Add points for unique digits
+        score += new Set(pin.split('')).size;
+    
+        // Subtract points for matching patterns
+        if (this.PATTERNS.SEQUENTIAL.test(pin)) score -= 2;
+        if (this.PATTERNS.REPEATED.test(pin)) score -= 2;
+    
+        return score >= 5 ? "Strong" : score >= 3 ? "Medium" : "Weak";
+    }
+    
+
 }
 
 // Example usage:
@@ -84,5 +102,6 @@ const testPINs = ['1234', '0000', '1111', '9999', '2580', '1379', '2024', '1221'
 
 testPINs.forEach(pin => {
     const result = PINEntropyValidator.validatePIN(pin);
-    console.log(`PIN ${pin}: ${result.isValid ? 'Valid' : 'Invalid'} - ${result.reason}`);
+    const strengthResult = PINEntropyValidator.calculateStrength(pin);
+    console.log(`PIN ${pin}: ${result.isValid ? 'Valid' : 'Invalid'} - ${result.reason} - Strength: ${strengthResult}`);
 });
